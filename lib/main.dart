@@ -1,8 +1,7 @@
-import 'package:first_project/pages/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
+import 'package:first_project/pages/login_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.deepPurple,
         brightness: Brightness.light
       ),
-      home: HomePage(),
+      home: LoginPage(),
     );
   }
 }
