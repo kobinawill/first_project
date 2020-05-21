@@ -28,6 +28,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
+  scoped_model: ^1.0.1
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +51,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
       - assets/food.jpg
+      - assets/background.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -73,6 +75,11 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+  fonts:
+       - family: Oswald
+         fonts:
+           - asset: assets/Oswald-Bold.ttf
+             weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
