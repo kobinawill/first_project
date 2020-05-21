@@ -1,23 +1,23 @@
 import 'package:first_project/models/product.dart';
 import 'package:first_project/pages/home.dart';
+import 'package:first_project/scoped_model_class/product_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 
 final GlobalKey<FormState> _updateFormKey = GlobalKey<FormState>();
 
 
-
 class ProductEditPage extends StatefulWidget {
-  final Product product;
   final int productIndex;
-  final Function updateProduct;
-  ProductEditPage({this.productIndex, this.product, this.updateProduct});
+
+  ProductEditPage({this.productIndex});
 
   final Map<String, dynamic> _formData = {
-    'title' : null,
-    'description' : null,
-    'price' : null,
+    'title': null,
+    'description': null,
+    'price': null,
     'image': 'assets/food.jpg'
   };
 
@@ -28,33 +28,34 @@ class ProductEditPage extends StatefulWidget {
   }
 }
 
-class _ProductEditPageState extends State<ProductEditPage>{
+class _ProductEditPageState extends State<ProductEditPage> {
 
-  Widget _buildProductTextField(){
+  Widget _buildProductTextField(Product product) {
     return TextFormField(
-      initialValue: widget.product.title,
-      validator: (String value){
+      initialValue: product.title,
+      validator: (String value) {
         String val;
-        if (value.isEmpty){
+        if (value.isEmpty) {
           val = 'Title is required';
         }
         return val;
       },
-      onSaved: (String value){
+      onSaved: (String value) {
         widget._formData['title'] = value;
       },
       decoration:
       InputDecoration(icon: Icon(Icons.title, size: 13,), labelText: 'Product'),
     );
   }
-  Widget _buildPriceTextField(){
+
+  Widget _buildPriceTextField(Product product) {
     return TextFormField(
       //controller: null,
-      initialValue: widget.product.price.toString(),
-      validator: (String value){
+      initialValue: product.price.toString(),
+      validator: (String value) {
         String val;
         //|| !RegExp(r'^(?:[1-9]\d*|0)?(?:\.\d+)?$').hasMatch(value)
-        if(value.isEmpty){
+        if (value.isEmpty) {
           val = 'Price is required and should be a number';
         }
         return val;
@@ -67,13 +68,14 @@ class _ProductEditPageState extends State<ProductEditPage>{
       keyboardType: TextInputType.number,
     );
   }
-  Widget _buildProductDescriptionTextField(){
+
+  Widget _buildProductDescriptionTextField(Product product) {
     return TextFormField(
       //controller: null,
-      initialValue: widget.product.description,
-      validator: (String value){
+      initialValue: product.description,
+      validator: (String value) {
         String val;
-        if(value.isEmpty){
+        if (value.isEmpty) {
           val = 'Description is required';
         }
         return val;
@@ -83,23 +85,27 @@ class _ProductEditPageState extends State<ProductEditPage>{
       },
       maxLines: 4,
       decoration: InputDecoration(
-          hintText: 'Product Description', icon: Icon(Icons.message, size: 13,)),
+          hintText: 'Product Description',
+          icon: Icon(Icons.message, size: 13,)),
     );
   }
-  Widget updateButton(BuildContext context) {
+
+  Widget updateButton(BuildContext context, Function updateProduct) {
     return RaisedButton(
-      color: Theme.of(context).accentColor,
+      color: Theme
+          .of(context)
+          .accentColor,
       onPressed: () {
-        if (_updateFormKey.currentState.validate()){
+        if (_updateFormKey.currentState.validate()) {
           _updateFormKey.currentState.save();
-        }else{
+        } else {
           return;
         }
-        widget.updateProduct(widget.productIndex, Product(
-          title: widget._formData['title'],
-          description: widget._formData['description'],
-          image: widget._formData['image'],
-          price: widget._formData['price']
+        updateProduct(widget.productIndex, Product(
+            title: widget._formData['title'],
+            description: widget._formData['description'],
+            image: widget._formData['image'],
+            price: widget._formData['price']
         ));
         print("${widget.productIndex}");
         Navigator.pushReplacement(context,
@@ -117,30 +123,37 @@ class _ProductEditPageState extends State<ProductEditPage>{
 
   @override
   Widget build(BuildContext context) {
-    final double deviceWidth = MediaQuery.of(context).size.width;
+    final double deviceWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
     final double finalWidth = deviceWidth - targetWidth;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Product'),
-      ),
-      body: Container(
-        margin: const EdgeInsets.all(10.0),
-        child: Form(
-          key: _updateFormKey,
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: finalWidth / 2),
-            children: <Widget>[
-              _buildProductTextField(),
-              _buildPriceTextField(),
-              _buildProductDescriptionTextField(),
-              updateButton(context)
-            ],
+    return ScopedModelDescendant<ProductModel>(
+      builder: (BuildContext context, Widget child, ProductModel model){
+        Product product = model.products[widget.productIndex];
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Edit Product'),
           ),
-        ),
-      ),
-    );
+          body: Container(
+            margin: const EdgeInsets.all(10.0),
+            child: Form(
+              key: _updateFormKey,
+              child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: finalWidth / 2),
+                children: <Widget>[
+                  _buildProductTextField(product),
+                  _buildPriceTextField(product),
+                  _buildProductDescriptionTextField(product),
+                  updateButton(context, model.updateProduct)
+                ],
+              ),
+            ),
+          ),
+        );
+      },);
   }
 }
 

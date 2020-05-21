@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
               title: Text('Manage Products'),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
-                  return ManageProductsPage(null, null, null, null);
+                  return ManageProductsPage();
                 }));
               },
             )
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: Products(products),
+      body: Products(),
     );
   }
 }

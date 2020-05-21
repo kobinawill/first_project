@@ -1,4 +1,3 @@
-import 'package:first_project/models/product.dart';
 import 'package:first_project/pages/product_create_page.dart';
 import 'package:first_project/pages/product_list_page.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:first_project/pages/home.dart';
 
 class ManageProductsPage extends StatelessWidget {
-  final Function addProduct;
-  final Function deleteProduct;
-  final Function updateProduct;
-  List<Product> products;
-  ManageProductsPage(this.addProduct, this.products, this.updateProduct, this.deleteProduct);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +43,7 @@ class ManageProductsPage extends StatelessWidget {
         ),
         body: TabBarView(children: <Widget>[
           ProductCreatePage(),
-          ProductListPage(products, updateProduct, deleteProduct)
+          ProductListPage()
         ],)
       ),
     );
