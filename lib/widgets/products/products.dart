@@ -13,7 +13,7 @@ class Products extends StatelessWidget {
 
   Widget buildCard(BuildContext context, int indexValue) {
     return ScopedModelDescendant<ProductModel>(
-      builder: (BuildContext context, Widget child, ProductModel model){
+      builder: (BuildContext context, Widget child, ProductModel model) {
         return Card(
           child: Column(
             children: <Widget>[
@@ -46,11 +46,16 @@ class Products extends StatelessWidget {
                           }));
                     },
                   ),
-                  IconButton(
-                    icon: Icon(Icons.favorite_border),
-                    color: Colors.red,
-                    onPressed: () {},
-                  )
+                  ScopedModelDescendant<ProductModel>(
+                    builder: (BuildContext context, Widget child, ProductModel model){
+                      return IconButton(
+                        icon: Icon(model.products[indexValue].isFavourite == true ? Icons.favorite : Icons.favorite_border),
+                        color: Colors.red,
+                        onPressed: () {
+                          model.toggleFavouriteStatus(indexValue);
+                        },
+                      );
+                    },)
                 ],
               )
             ],
@@ -59,14 +64,25 @@ class Products extends StatelessWidget {
       },);
   }
 
-  Widget buildProductList(List products) {
+  Widget buildProductList(List products, bool toggleFavourites) {
     Widget buildProduct;
     if (products.length > 0) {
       buildProduct = ListView.builder(
         itemBuilder: buildCard,
         itemCount: products.length,
       );
-    } else {
+    } else if(toggleFavourites && products.length == 0){
+      buildProduct = Center(
+          child: Container(
+            padding: EdgeInsets.all(15),
+            child: Text(
+              "No products have been added to favourites",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontStyle: FontStyle.italic),),
+          )
+      );
+    }
+    else {
       buildProduct = Center(
           child: Container(
             padding: EdgeInsets.all(15),
@@ -85,7 +101,7 @@ class Products extends StatelessWidget {
     // TODO: implement build
     return ScopedModelDescendant<ProductModel>(
       builder: (BuildContext context, Widget child, ProductModel model) {
-        return buildProductList(model.products);
+        return buildProductList(model.displayFavouriteProducts, model.toggleFavourites);
       },);
   }
 }

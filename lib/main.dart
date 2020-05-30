@@ -1,4 +1,5 @@
 import 'package:first_project/pages/home.dart';
+import 'package:first_project/pages/manageproduct_page.dart';
 import 'package:first_project/scoped_model_class/product_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
           ),
           home: LoginPage(),
           routes: {
-            '/home_page': (BuildContext context){ return HomePage();}
+            '/home_page': (BuildContext context){ return HomePage();},
+            '/manage_product_page': (BuildContext context){return ManageProductsPage();}
           }
       ),
     );

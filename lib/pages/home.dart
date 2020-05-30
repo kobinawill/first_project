@@ -1,10 +1,10 @@
+import 'package:first_project/scoped_model_class/product_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:first_project/pages/manageproduct_page.dart';
+import 'package:scoped_model/scoped_model.dart';
 import '../widgets/products/products.dart';
-import 'package:first_project/models/product.dart';
 
-List<Product> products = [];
 
 class HomePage extends StatefulWidget {
 
@@ -33,9 +33,7 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.edit),
               title: Text('Manage Products'),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
-                  return ManageProductsPage();
-                }));
+                Navigator.popAndPushNamed(context, '/manage_product_page');
               },
             )
           ],
@@ -44,10 +42,14 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("EasyList"),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.favorite),
-            onPressed: () {},
-          )
+          ScopedModelDescendant<ProductModel>(builder: (BuildContext context, Widget child, ProductModel model){
+            return IconButton(
+              icon: Icon(model.toggleFavourites ? Icons.favorite : Icons.favorite_border),
+              onPressed: () {
+                model.toggleFavouritesSwitch();
+              },
+            );
+          },)
         ],
       ),
       body: Products(),

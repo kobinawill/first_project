@@ -95,7 +95,6 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
     } else {
       return;
     }
-    print("${home.products}");
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext context) {
           return home.HomePage();

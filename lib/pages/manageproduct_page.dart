@@ -19,10 +19,7 @@ class ManageProductsPage extends StatelessWidget {
                 leading: Icon(Icons.shop),
                 title: Text('All Products'),
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder:
-                      (BuildContext context){
-                    return HomePage();
-                  }));
+                  Navigator.pushReplacementNamed(context, '/home_page' );
                 },
               )
             ],
