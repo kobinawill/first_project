@@ -1,6 +1,6 @@
 import 'package:first_project/pages/home.dart';
 import 'package:first_project/pages/manageproduct_page.dart';
-import 'package:first_project/scoped_model_class/product_model.dart';
+import 'package:first_project/scoped_model_class/main_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +12,9 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ScopedModel<ProductModel>(
-      model: ProductModel(),
+    MainModel model = MainModel();
+    return ScopedModel<MainModel>(
+      model: model,
       child: MaterialApp(
           theme: ThemeData(
               primarySwatch: Colors.deepOrange,
@@ -22,8 +23,8 @@ class MyApp extends StatelessWidget {
           ),
           home: LoginPage(),
           routes: {
-            '/home_page': (BuildContext context){ return HomePage();},
-            '/manage_product_page': (BuildContext context){return ManageProductsPage();}
+            '/home_page': (BuildContext context){ return HomePage(model);},
+            '/manage_product_page': (BuildContext context){return ManageProductsPage(model);}
           }
       ),
     );

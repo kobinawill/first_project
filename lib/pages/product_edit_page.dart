@@ -1,13 +1,13 @@
 import 'package:first_project/models/product.dart';
 import 'package:first_project/pages/home.dart';
-import 'package:first_project/scoped_model_class/product_model.dart';
+import 'package:first_project/scoped_model_class/main_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 
 final GlobalKey<FormState> _updateFormKey = GlobalKey<FormState>();
-
+final MainModel model = MainModel();
 
 class ProductEditPage extends StatefulWidget {
   final int productIndex;
@@ -18,7 +18,7 @@ class ProductEditPage extends StatefulWidget {
     'title': null,
     'description': null,
     'price': null,
-    'image': 'assets/food.jpg'
+    'image': null
   };
 
   @override
@@ -90,34 +90,42 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  Widget updateButton(BuildContext context, Function updateProduct) {
-    return RaisedButton(
-      color: Theme
-          .of(context)
-          .accentColor,
-      onPressed: () {
-        if (_updateFormKey.currentState.validate()) {
-          _updateFormKey.currentState.save();
-        } else {
-          return;
-        }
-        updateProduct(widget.productIndex, Product(
-            title: widget._formData['title'],
-            description: widget._formData['description'],
-            image: widget._formData['image'],
-            price: widget._formData['price']
-        ));
-        print("${widget.productIndex}");
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (BuildContext context) {
-              return HomePage();
-            }));
-      },
-      child: Text(
-        "Edit Product",
-        style: TextStyle(color: Colors.white),
-      ),
-    );
+  Widget updateButton(Function updateProduct) {
+      return ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model){
+        return model.isLoading
+            ? Center(
+          child: Container(padding: EdgeInsets.only(top: 10), child: CircularProgressIndicator(),),)
+            : RaisedButton(
+          color: Theme
+              .of(context)
+              .accentColor,
+          onPressed: () => submitForm(context, updateProduct, model),
+          child: Text(
+            "Edit Product",
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+      },);
+  }
+
+
+  submitForm(BuildContext context, Function updateProduct, MainModel model){
+    if (_updateFormKey.currentState.validate()) {
+      _updateFormKey.currentState.save();
+    } else {
+      return;
+    }
+    updateProduct(widget.productIndex,
+        widget._formData['title'],
+        widget._formData['description'],
+        widget._formData['image'],
+        widget._formData['price']
+    ).then((_) {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (BuildContext context) {
+            return HomePage(model);
+          }));
+    });
   }
 
 
@@ -130,8 +138,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
     final double finalWidth = deviceWidth - targetWidth;
 
-    return ScopedModelDescendant<ProductModel>(
-      builder: (BuildContext context, Widget child, ProductModel model){
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         Product product = model.products[widget.productIndex];
         return Scaffold(
           appBar: AppBar(
@@ -147,7 +155,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
                   _buildProductTextField(product),
                   _buildPriceTextField(product),
                   _buildProductDescriptionTextField(product),
-                  updateButton(context, model.updateProduct)
+                  updateButton(model.updateProduct)
                 ],
               ),
             ),

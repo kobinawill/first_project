@@ -1,6 +1,6 @@
 import 'package:first_project/models/product.dart';
 import 'package:first_project/pages/product_page.dart';
-import 'package:first_project/scoped_model_class/product_model.dart';
+import 'package:first_project/scoped_model_class/main_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -9,15 +9,23 @@ import 'price_tag.dart';
 import 'package:first_project/ui_elements/title_tag.dart';
 import 'package:first_project/widgets/products/address_tag.dart';
 
-class Products extends StatelessWidget {
+class Products extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _ProductsState();
+  }
+
+}
+
+class _ProductsState extends State<Products> {
 
   Widget buildCard(BuildContext context, int indexValue) {
-    return ScopedModelDescendant<ProductModel>(
-      builder: (BuildContext context, Widget child, ProductModel model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         return Card(
           child: Column(
             children: <Widget>[
-              Image.asset(model.products[indexValue].image),
+              Image.network(model.products[indexValue].image),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -29,6 +37,7 @@ class Products extends StatelessWidget {
                 ],
               ),
               AddressTag('Union Square, San Francisco'),
+              AddressTag('${model.products[indexValue].email}'),
               ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -46,8 +55,8 @@ class Products extends StatelessWidget {
                           }));
                     },
                   ),
-                  ScopedModelDescendant<ProductModel>(
-                    builder: (BuildContext context, Widget child, ProductModel model){
+                  ScopedModelDescendant<MainModel>(
+                    builder: (BuildContext context, Widget child, MainModel model){
                       return IconButton(
                         icon: Icon(model.products[indexValue].isFavourite == true ? Icons.favorite : Icons.favorite_border),
                         color: Colors.red,
@@ -99,8 +108,8 @@ class Products extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return ScopedModelDescendant<ProductModel>(
-      builder: (BuildContext context, Widget child, ProductModel model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         return buildProductList(model.displayFavouriteProducts, model.toggleFavourites);
       },);
   }

@@ -1,4 +1,4 @@
-import 'package:first_project/scoped_model_class/product_model.dart';
+import 'package:first_project/scoped_model_class/main_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -38,8 +38,8 @@ class ProductPage extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: ScopedModelDescendant<ProductModel>(
-        builder: (BuildContext context, Widget child, ProductModel model){
+      child: ScopedModelDescendant<MainModel>(
+        builder: (BuildContext context, Widget child, MainModel model){
           return Scaffold(
             appBar: AppBar(
               title: Text(model.products[productIndex].title),
@@ -47,7 +47,7 @@ class ProductPage extends StatelessWidget {
             body: Center(
               child: Column(
                 children: <Widget>[
-                  Image.asset(model.products[productIndex].image),
+                  Image.network(model.products[productIndex].image),
                   Padding(padding: const EdgeInsets.all(10.0),),
                   TitleTag(model.products[productIndex].title),
                   Padding(padding: const EdgeInsets.all(7.0),),

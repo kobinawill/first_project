@@ -1,20 +1,18 @@
-import 'package:first_project/models/product.dart';
 import 'package:first_project/pages/home.dart' as home;
-import 'package:first_project/scoped_model_class/product_model.dart';
+import 'package:first_project/scoped_model_class/main_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+final MainModel model = MainModel();
 
 class ProductCreatePage extends StatefulWidget {
   final Map<String, dynamic> _formData = {
     'title': null,
     'description': null,
     'price': null,
-    'image': 'assets/food.jpg'
+    'image': null
   };
 
   @override
@@ -25,7 +23,6 @@ class ProductCreatePage extends StatefulWidget {
 }
 
 class _ProductCreatePageState extends State<ProductCreatePage> {
-
   Widget _buildProductTextField() {
     return TextFormField(
       validator: (String value) {
@@ -38,8 +35,12 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
       onSaved: (String value) {
         widget._formData['title'] = value;
       },
-      decoration:
-      InputDecoration(icon: Icon(Icons.title, size: 13,), labelText: 'Product'),
+      decoration: InputDecoration(
+          icon: Icon(
+            Icons.title,
+            size: 13,
+          ),
+          labelText: 'Product'),
     );
   }
 
@@ -58,7 +59,11 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
         widget._formData['price'] = double.parse(value);
       },
       decoration: InputDecoration(
-          icon: Icon(Icons.attach_money, size: 14,), labelText: 'Price'),
+          icon: Icon(
+            Icons.attach_money,
+            size: 14,
+          ),
+          labelText: 'Price'),
       keyboardType: TextInputType.number,
     );
   }
@@ -79,49 +84,54 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
       maxLines: 4,
       decoration: InputDecoration(
           hintText: 'Product Description',
-          icon: Icon(Icons.message, size: 13,)),
+          icon: Icon(
+            Icons.message,
+            size: 13,
+          )),
     );
   }
 
   submitForm(BuildContext context, Function addProduct) {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      addProduct(Product(
-          image: widget._formData['image'],
-          title: widget._formData['title'],
-          description: widget._formData['description'],
-          price: widget._formData['price'])
+      addProduct(widget._formData['title'], widget._formData['description'],
+              widget._formData['image'], widget._formData['price'])
+          .then((_) =>
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext context) {
+          return home.HomePage(model);
+        }))
       );
     } else {
       return;
     }
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) {
-          return home.HomePage();
-        }));
   }
 
   Widget _buildSubmitButton() {
-    return ScopedModelDescendant<ProductModel>(
-      builder: (BuildContext context, Widget child, ProductModel model){
-        return RaisedButton(
-            color: Theme.of(context).accentColor,
-            onPressed: () => submitForm(context, model.addProducts),
-            child: Text(
-              "Add Product",
-              style: TextStyle(color: Colors.white),
-          ),
-        );
-      },);
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
+        return model.isLoading
+            ? Center(
+                child: Container(
+                  padding: EdgeInsets.only(top: 10),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : RaisedButton(
+                color: Theme.of(context).accentColor,
+                onPressed: () => submitForm(context, model.addProducts),
+                child: Text(
+                  "Add Product",
+                  style: TextStyle(color: Colors.white),
+                ),
+              );
+      },
+    );
   }
-
 
   @override
   Widget build(BuildContext context) {
-    final double deviceWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
     final double finalWidth = deviceWidth - targetWidth;
 
@@ -140,7 +150,6 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
               _buildPriceTextField(),
               _buildProductDescriptionTextField(),
               _buildSubmitButton(),
-
             ],
           ),
         ),
@@ -148,7 +157,3 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
     );
   }
 }
-
-
-
-

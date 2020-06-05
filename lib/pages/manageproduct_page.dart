@@ -1,10 +1,14 @@
 import 'package:first_project/pages/product_create_page.dart';
 import 'package:first_project/pages/product_list_page.dart';
+import 'package:first_project/scoped_model_class/main_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:first_project/pages/home.dart';
 
 class ManageProductsPage extends StatelessWidget {
+  final MainModel model;
+
+  ManageProductsPage(this.model);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +44,7 @@ class ManageProductsPage extends StatelessWidget {
         ),
         body: TabBarView(children: <Widget>[
           ProductCreatePage(),
-          ProductListPage()
+          ProductListPage(model)
         ],)
       ),
     );
