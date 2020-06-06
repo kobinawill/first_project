@@ -96,12 +96,31 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
       _formKey.currentState.save();
       addProduct(widget._formData['title'], widget._formData['description'],
               widget._formData['image'], widget._formData['price'])
-          .then((_) =>
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (BuildContext context) {
-          return home.HomePage(model);
-        }))
-      );
+          .then((bool success) {
+        if (success) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (BuildContext context) {
+            return home.HomePage(model);
+          }));
+        } else {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Something went wrong'),
+                  content: Text('Please try again'),
+                  actions: <Widget>[
+                    FlatButton(
+                      onPressed: (){
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Okay'),
+                    )
+                  ],
+                );
+              });
+        }
+      });
     } else {
       return;
     }

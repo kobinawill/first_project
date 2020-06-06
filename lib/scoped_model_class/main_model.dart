@@ -18,18 +18,18 @@ mixin ConnectedModels on Model {
 
   void login(String email, String password) {
     _authenticatedUser =
-    new User(email: email, password: password, userId: 'tkhdklh');
+        new User(email: email, password: password, userId: 'tkhdklh');
   }
 
-  Future<Null> addProducts(String title, String description, String image,
-      double price) {
+  Future<bool> addProducts(
+      String title, String description, String image, double price) {
     isLoading = true;
     notifyListeners();
     Map<String, dynamic> productData = {
       'title': title,
       'description': description,
       'image':
-      'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
+          'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
       'price': price,
       'email': _authenticatedUser.email,
       'userId': _authenticatedUser.userId
@@ -37,47 +37,53 @@ mixin ConnectedModels on Model {
 
     return http
         .post('https://flutter-products-b7b5f.firebaseio.com/products.json',
-        body: json.encode(productData))
+            body: json.encode(productData))
         .then((http.Response response) {
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        isLoading = false;
+        notifyListeners();
+        return false;
+      }
       Map<String, dynamic> responseData = json.decode(response.body);
       _products.add(new Product(
         id: responseData['name'],
         title: title,
         description: description,
         image:
-        'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
+            'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
         price: price,
         email: _authenticatedUser.email,
         userId: _authenticatedUser.userId,
       ));
       isLoading = false;
+      return true;
     });
   }
 
-  Future<Null> updateProduct(int index, String title, String description,
-      String image, double price) {
+  Future<Null> updateProduct(
+      int index, String title, String description, String image, double price) {
     isLoading = true;
     notifyListeners();
     final Map<String, dynamic> updatedData = {
       'title': title,
       'description': description,
       'image':
-      'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
+          'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
       'price': price,
       'email': _authenticatedUser.email,
       'userId': _authenticatedUser.userId,
     };
     return http
         .put(
-        'https://flutter-products-b7b5f.firebaseio.com/products/${_products[index]
-            .id}.json',
-        body: json.encode(updatedData))
+            'https://flutter-products-b7b5f.firebaseio.com/products/${_products[index].id}.json',
+            body: json.encode(updatedData))
         .then((http.Response response) {
       Product newProduct = Product(
         id: _products[index].id,
         title: title,
         description: description,
-        image: 'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
+        image:
+            'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
         price: price,
         email: _products[index].email,
         userId: _products[index].userId,
@@ -158,16 +164,21 @@ mixin ProductModel on Model implements ConnectedModels {
     }
   }
 
-  void deleteProduct(int index) {
+  Future<bool> deleteProduct(int index) {
     isLoading = true;
-    http.delete(
-        'https://flutter-products-b7b5f.firebaseio.com/products/${_products[index]
-            .id}.json').then((http.Response response){
-              isLoading = false;
-              notifyListeners();
-    });
-    _products.removeAt(index);
     notifyListeners();
+    return http
+        .delete(
+            'https://flutter-products-b7b5f.firebaseio.com/products/${_products[index].id}.json')
+        .then((http.Response response) {
+      _products.removeAt(index);
+      isLoading = false;
+      notifyListeners();
+      return true;
+    }).catchError((onError) {
+      isLoading = false;
+      return false;
+    });
   }
 }
 

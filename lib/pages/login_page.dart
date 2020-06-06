@@ -32,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
       onSaved: (String value) {
         _formData['email'] = value;
       },
+      keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
           labelText: 'Email', filled: true, fillColor: Colors.white),
     );

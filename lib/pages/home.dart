@@ -1,12 +1,12 @@
 import 'package:first_project/scoped_model_class/main_model.dart';
 import 'package:flutter/material.dart';
-
 import 'package:scoped_model/scoped_model.dart';
+
 import '../widgets/products/products.dart';
 
-
 class HomePage extends StatefulWidget {
-final MainModel model;
+  final MainModel model;
+
   HomePage(this.model);
 
   @override
@@ -16,29 +16,36 @@ final MainModel model;
 }
 
 class _HomePageState extends State<HomePage> {
-
-@override
+  @override
   void initState() {
     widget.model.fetchData();
     super.initState();
   }
 
-  Widget _buildProductList(){
-    Widget checkLoading = Center(child: CircularProgressIndicator(),);
-    return ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model){
-      if(!model.isLoading){
-        print('${model.isLoading}');
-        checkLoading = Products();
-        return checkLoading;
-      }
-      print('${model.isLoading}');
-      return checkLoading;
-    },);
+  Widget _buildProductList() {
+    Widget checkLoading = Center(
+      child: CircularProgressIndicator(),
+    );
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
+        if (!model.isLoading) {
+          print('${model.isLoading}');
+          checkLoading = Products();
+        }else if(model.isLoading){
+          print('${model.isLoading}');
+          checkLoading = checkLoading;
+        } return RefreshIndicator(
+          onRefresh: () {
+            return model.fetchData();
+          },
+          child: checkLoading,
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       drawer: Drawer(
         child: Column(
@@ -60,14 +67,18 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("EasyList"),
         actions: <Widget>[
-          ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model){
-            return IconButton(
-              icon: Icon(model.toggleFavourites ? Icons.favorite : Icons.favorite_border),
-              onPressed: () {
-                model.toggleFavouritesSwitch();
-              },
-            );
-          },)
+          ScopedModelDescendant<MainModel>(
+            builder: (BuildContext context, Widget child, MainModel model) {
+              return IconButton(
+                icon: Icon(model.toggleFavourites
+                    ? Icons.favorite
+                    : Icons.favorite_border),
+                onPressed: () {
+                  model.toggleFavouritesSwitch();
+                },
+              );
+            },
+          )
         ],
       ),
       body: _buildProductList(),
