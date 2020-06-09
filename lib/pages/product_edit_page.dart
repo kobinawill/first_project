@@ -95,14 +95,40 @@ class _ProductEditPageState extends State<ProductEditPage> {
         return model.isLoading
             ? Center(
           child: Container(padding: EdgeInsets.only(top: 10), child: CircularProgressIndicator(),),)
-            : RaisedButton(
-          color: Theme
-              .of(context)
-              .accentColor,
-          onPressed: () => submitForm(context, updateProduct, model),
-          child: Text(
-            "Edit Product",
-            style: TextStyle(color: Colors.white),
+            : Container(
+          padding: const EdgeInsets.only(left: 20),
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(10.0),
+              ),
+              RaisedButton(
+                color: Theme
+                    .of(context)
+                    .accentColor,
+                onPressed: () => submitForm(context, updateProduct, model),
+                child: Text(
+                  "Edit Product",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(5.0),
+              ),
+              RaisedButton(
+                color: Theme
+                    .of(context)
+                    .accentColor,
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+              )
+
+            ],
           ),
         );
       },);
@@ -155,7 +181,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
                   _buildProductTextField(product),
                   _buildPriceTextField(product),
                   _buildProductDescriptionTextField(product),
-                  updateButton(model.updateProduct)
+                  updateButton(model.updateProduct),
                 ],
               ),
             ),

@@ -24,7 +24,8 @@ class _ProductsState extends State<Products> {
             children: <Widget>[
               FadeInImage(
                 image: NetworkImage(model.products[indexValue].image),
-                placeholder: AssetImage('assets/food.jpg'),
+                placeholder: AssetImage('assets/placeholder.png'),
+                height: 240,
                 fit: BoxFit.cover,
               ),
               Row(
