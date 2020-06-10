@@ -9,6 +9,7 @@ class Product {
   bool isFavourite;
   String email;
   String userId;
+  String userToken;
 
   Product({
     @required this.id,
@@ -18,7 +19,8 @@ class Product {
     @required this.price,
     @required this.email,
     @required this.userId,
-    this.isFavourite = false
+    this.isFavourite = false,
+    @required this.userToken
 });
 
 

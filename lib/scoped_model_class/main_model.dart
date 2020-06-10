@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:first_project/controllers/pref_controller.dart';
 import 'package:first_project/models/product.dart';
 import 'package:first_project/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainModel extends Model with ConnectedModels, ProductModel, UserModel {}
 
@@ -11,6 +13,8 @@ mixin ConnectedModels on Model {
   List<Product> _products = [];
   bool isLoading = false;
   User _authenticatedUser;
+  String authenticatedUserToken = '';
+
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     isLoading = true;
@@ -32,9 +36,14 @@ mixin ConnectedModels on Model {
     if (checkData.containsKey('idToken')) {
       hasError = false;
       message = 'Authentication succeeded!';
-      _authenticatedUser = new User(userId: checkData['localId'], email: email, token: checkData['idToken']);
-      print('$checkData');
-      print('${_authenticatedUser.token}');
+      await PrefController.setToken(checkData['idToken']);
+      _authenticatedUser = new User(
+          userId: checkData['localId'],
+          email: email,
+          token: checkData['idToken']);
+      authenticatedUserToken = checkData['idToken'];
+     // print('$checkData');
+
     } else if (checkData['error']['message'] == 'EMAIL_NOT_FOUND') {
       message = 'Email was not found';
     } else if(checkData['error']['message'] == 'INVALID_PASSWORD'){
@@ -42,8 +51,10 @@ mixin ConnectedModels on Model {
     }
     isLoading = false;
     notifyListeners();
+    /*print('token: ${_authenticatedUser.token}');
+    print('email: ${_authenticatedUser.email}');
+    print('userId: ${_authenticatedUser.userId}');*/
     return {'success': !hasError, 'message': message};
-    //_authenticatedUser = new User(email: email, password: password, userId: 'tkhdklh');
   }
 
   Future<Map<String, dynamic>> signUp(String email, String password) async {
@@ -54,21 +65,30 @@ mixin ConnectedModels on Model {
       'password': password,
       'returnSecureToken': true
     };
+
+    /*print('token: ${_authenticatedUser.token}');
+    print('email: ${_authenticatedUser.email}');
+    print('userId: ${_authenticatedUser.userId}');*/
+
     http.Response response = await http.post(
         'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAoOEBYyfBu5oOE_raQMeMClk4KP51kTo8',
         body: json.encode(authData),
         headers: {'Content-Type': 'application/json'});
 
-    print('${json.decode(response.body)}');
     final Map<String, dynamic> checkData = json.decode(response.body);
     bool hasError = true;
     String message = 'Something went wrong';
     if (checkData.containsKey('idToken')) {
       hasError = false;
       message = 'Authentication succeeded!';
-      _authenticatedUser = new User(userId: checkData['localId'], email: email, token: checkData['idToken']);
-      print('$checkData');
-      print('${_authenticatedUser.token}');
+      await PrefController.setToken(checkData['idToken']);
+      _authenticatedUser = new User(
+          userId: checkData['localId'],
+          email: checkData['email'],
+          token: checkData['idToken']
+      );
+      authenticatedUserToken = checkData['idToken'];
+      //print('$checkData');
     } else if (checkData['error']['message'] == 'EMAIL_EXISTS') {
       message = 'Email Already exists';
     }
@@ -83,9 +103,10 @@ mixin ConnectedModels on Model {
   }
 
   Future<bool> addProducts(
-      String title, String description, String image, double price) {
+      String title, String description, String image, double price) async {
     isLoading = true;
     notifyListeners();
+
     Map<String, dynamic> productData = {
       'title': title,
       'description': description,
@@ -93,17 +114,22 @@ mixin ConnectedModels on Model {
           'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
       'price': price,
       'email': _authenticatedUser.email,
-      'userId': _authenticatedUser.userId
+      'userId': _authenticatedUser.userId,
+      'userToken': _authenticatedUser.token
     };
 
+    String token = await PrefController.getToken();
+    //print('TOKEN FROM ADDPRODUCT: $token');
+    //print('token $token');
+
     return http
-        .post('https://flutter-products-b7b5f.firebaseio.com/products.json?auth=${_authenticatedUser.token}',
+        .post('https://flutter-products-b7b5f.firebaseio.com/products.json?auth=$token',
             body: json.encode(productData))
         .then((http.Response response) {
       if (response.statusCode != 200 && response.statusCode != 201) {
         isLoading = false;
         notifyListeners();
-        return false;
+          return false;
       }
       Map<String, dynamic> responseData = json.decode(response.body);
       _products.add(new Product(
@@ -115,6 +141,7 @@ mixin ConnectedModels on Model {
         price: price,
         email: _authenticatedUser.email,
         userId: _authenticatedUser.userId,
+        userToken: _authenticatedUser.token
       ));
       isLoading = false;
       return true;
@@ -122,7 +149,7 @@ mixin ConnectedModels on Model {
   }
 
   Future<Null> updateProduct(
-      int index, String title, String description, String image, double price) {
+      int index, String title, String description, String image, double price) async {
     isLoading = true;
     notifyListeners();
     final Map<String, dynamic> updatedData = {
@@ -133,10 +160,13 @@ mixin ConnectedModels on Model {
       'price': price,
       'email': _authenticatedUser.email,
       'userId': _authenticatedUser.userId,
+      'userToken': _authenticatedUser.token
     };
+    String token = await PrefController.getToken();
+
     return http
         .put(
-            'https://flutter-products-b7b5f.firebaseio.com/products/${_products[index].id}.json?auth=${_authenticatedUser.token}',
+            'https://flutter-products-b7b5f.firebaseio.com/products/${_products[index].id}.json?auth=$token',
             body: json.encode(updatedData))
         .then((http.Response response) {
       Product newProduct = Product(
@@ -148,6 +178,7 @@ mixin ConnectedModels on Model {
         price: price,
         email: _products[index].email,
         userId: _products[index].userId,
+        userToken: _products[index].userToken
       );
       _products[index] = newProduct;
       isLoading = false;
@@ -165,6 +196,7 @@ mixin ConnectedModels on Model {
         price: _products[index].price,
         email: _products[index].email,
         userId: _products[index].userId,
+        userToken: _products[index].userToken,
         isFavourite: newFavourite);
     _products[index] = updatedProduct;
     notifyListeners();
@@ -174,28 +206,36 @@ mixin ConnectedModels on Model {
 }
 
 mixin ProductModel on Model implements ConnectedModels {
-  Future<Null> fetchData() {
+  Future<Null> fetchData() async {
     isLoading = true;
     notifyListeners();
+    String token = await PrefController.getToken();
+    //print('TOKEN FROM FETCHDATA: $token');
+    //print('token $token');
+
     return http
-        .get('https://flutter-products-b7b5f.firebaseio.com/products.json?auth=${_authenticatedUser.token}')
+        .get('https://flutter-products-b7b5f.firebaseio.com/products.json?auth=$token')
         .then((http.Response response) {
       final List<Product> fetchedProducts = [];
       final Map<String, dynamic> productListData = json.decode(response.body);
+          //print('api data');
+          //print('PRODUCT DATA HERE: $productListData');
       if (productListData == null) {
         isLoading = false;
         notifyListeners();
         return;
       }
       productListData.forEach((String productId, dynamic productData) {
+
         final Product product = Product(
           id: productId,
-          title: productData['title'],
-          description: productData['description'],
-          image: productData['image'],
+          title: '${productData['title']}',
+          description: '${productData['description']}',
+          image: '${productData['image']}',
           price: productData['price'],
-          email: productData['email'],
-          userId: productData['userId'],
+          email: '${productData['email']}',
+          userId: '${productData['userId']}',
+          userToken: '${productData['userToken']}'
         );
         fetchedProducts.add(product);
       });
@@ -225,12 +265,15 @@ mixin ProductModel on Model implements ConnectedModels {
     }
   }
 
-  Future<bool> deleteProduct(int index) {
+  Future<bool> deleteProduct(int index) async {
     isLoading = true;
     notifyListeners();
+
+    String token = await PrefController.getToken();
+
     return http
         .delete(
-            'https://flutter-products-b7b5f.firebaseio.com/products/${_products[index].id}.json?auth=${_authenticatedUser.token}')
+            'https://flutter-products-b7b5f.firebaseio.com/products/${_products[index].id}.json?auth=$token')
         .then((http.Response response) {
       _products.removeAt(index);
       isLoading = false;

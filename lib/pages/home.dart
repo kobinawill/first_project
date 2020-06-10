@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     widget.model.fetchData();
+    //widget.model.loadToken();
     super.initState();
   }
 
@@ -29,10 +30,10 @@ class _HomePageState extends State<HomePage> {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget child, MainModel model) {
         if (!model.isLoading) {
-          print('${model.isLoading}');
+          //print('${model.isLoading}');
           checkLoading = Products();
         }else if(model.isLoading){
-          print('${model.isLoading}');
+          //print('${model.isLoading}');
           checkLoading = checkLoading;
         } return RefreshIndicator(
           onRefresh: () {
@@ -65,7 +66,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       appBar: AppBar(
-        title: Text("EasyList"),
+        title: Text("Asime"),
         actions: <Widget>[
           ScopedModelDescendant<MainModel>(
             builder: (BuildContext context, Widget child, MainModel model) {

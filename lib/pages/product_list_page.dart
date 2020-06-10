@@ -76,7 +76,7 @@ class _ProductListPageState extends State<ProductListPage> {
                                   model.products[indexValue].image),
                             ),
                             title: Text(model.products[indexValue].title),
-                            subtitle: Text('\$' +
+                            subtitle: Text('GH₵' +
                                 model.products[indexValue].price.toString()),
                             trailing: IconButton(
                                 icon: Icon(Icons.edit),

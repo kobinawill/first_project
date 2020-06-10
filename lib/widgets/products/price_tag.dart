@@ -13,7 +13,7 @@ class PriceTag extends StatelessWidget {
           borderRadius: BorderRadius.circular(5.0)
       ),
       padding: EdgeInsets.symmetric(vertical: 2.5, horizontal: 6.0),
-      child: Text('\$$price', style: TextStyle(color: Colors.white),),
+      child: Text('GH₵$price', style: TextStyle(color: Colors.white),),
     );
   }
 }

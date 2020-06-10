@@ -63,7 +63,7 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
             Icons.attach_money,
             size: 14,
           ),
-          labelText: 'Price'),
+          labelText: 'Price in Ghana cedis'),
       keyboardType: TextInputType.number,
     );
   }

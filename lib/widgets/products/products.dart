@@ -38,8 +38,7 @@ class _ProductsState extends State<Products> {
                   PriceTag(model.products[indexValue].price.toString())
                 ],
               ),
-              AddressTag('Union Square, San Francisco'),
-              AddressTag('${model.products[indexValue].email}'),
+              AddressTag('The Castle, Cape Coast'),
               ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: <Widget>[

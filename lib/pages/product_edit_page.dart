@@ -64,7 +64,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         widget._formData['price'] = double.parse(value);
       },
       decoration: InputDecoration(
-          icon: Icon(Icons.attach_money, size: 14,), labelText: 'Price'),
+          icon: Icon(Icons.attach_money, size: 14,), labelText: 'Price in Ghana cedis'),
       keyboardType: TextInputType.number,
     );
   }

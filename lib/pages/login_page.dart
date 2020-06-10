@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
         successInformation =
             await login(_formData['email'], _formData['password']);
         if (successInformation['success']) {
-          Navigator.pushReplacementNamed(context, '/home_page');
+                 Navigator.pushReplacementNamed(context, '/home_page');
         } else {
           showDialog(
               context: context,
@@ -135,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
         successInformation =
             await signUp(_formData['email'], _formData['password']);
         if (successInformation['success']) {
-          Navigator.pushReplacementNamed(context, '/home_page');
+                 Navigator.pushReplacementNamed(context, '/home_page');
         } else {
           showDialog(
               context: context,
