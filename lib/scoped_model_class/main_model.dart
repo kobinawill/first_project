@@ -37,6 +37,9 @@ mixin ConnectedModels on Model {
       hasError = false;
       message = 'Authentication succeeded!';
       await PrefController.setToken(checkData['idToken']);
+      await PrefController.setEmail(checkData['email']);
+      await PrefController.setUserId(checkData['localId']);
+
       _authenticatedUser = new User(
           userId: checkData['localId'],
           email: email,
@@ -82,6 +85,9 @@ mixin ConnectedModels on Model {
       hasError = false;
       message = 'Authentication succeeded!';
       await PrefController.setToken(checkData['idToken']);
+      await PrefController.setEmail(checkData['email']);
+      await PrefController.setUserId(checkData['localId']);
+
       _authenticatedUser = new User(
           userId: checkData['localId'],
           email: checkData['email'],
@@ -284,6 +290,37 @@ mixin ProductModel on Model implements ConnectedModels {
       return false;
     });
   }
+
+  var token;
+  void autoAuthenticate() async {
+    token = await PrefController.getToken();
+    if (token != "" && token != null){
+      var userId = await PrefController.getUserId();
+      var email = await PrefController.getEmail();
+      _authenticatedUser = User (
+          email: email,
+          userId: userId,
+          token: token
+      );
+      print('TOKEN: $token\n USERID: $userId\n EMAIL: $email\n  USER_EMAIL_(user not null):${_authenticatedUser.email}' );
+    }
+    //notifyListeners();
+  }
+
+  String get userToken{
+    return token;
+  }
+
+  void logOut() async {
+    _authenticatedUser = null;
+    await PrefController.clearUserDetails();
+    notifyListeners();
+  }
+
+  User get user {
+    return _authenticatedUser;
+  }
+
 }
 
 mixin UserModel on Model implements ConnectedModels {

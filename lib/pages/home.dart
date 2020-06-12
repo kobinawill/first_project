@@ -1,4 +1,5 @@
 import 'package:first_project/scoped_model_class/main_model.dart';
+import 'package:first_project/ui_elements/logout_listtile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -61,7 +62,9 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.popAndPushNamed(context, '/manage_product_page');
               },
-            )
+            ),
+            Divider(),
+            LogoutWidget(widget.model),
           ],
         ),
       ),

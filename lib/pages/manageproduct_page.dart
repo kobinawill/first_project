@@ -1,6 +1,7 @@
 import 'package:first_project/pages/product_create_page.dart';
 import 'package:first_project/pages/product_list_page.dart';
 import 'package:first_project/scoped_model_class/main_model.dart';
+import 'package:first_project/ui_elements/logout_listtile_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:first_project/pages/home.dart';
@@ -25,7 +26,9 @@ class ManageProductsPage extends StatelessWidget {
                 onTap: () {
                   Navigator.pushReplacementNamed(context, '/home_page' );
                 },
-              )
+              ),
+              Divider(),
+              LogoutWidget(model),
             ],
           ),
         ),
